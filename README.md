@@ -1,40 +1,120 @@
-# Leitor Bíblico PHP + MySQL — progresso, contas e histórico
+# 📖 Leitor Bíblico
 
-## Requisitos
-- PHP 8.1+ com `pdo_mysql` e `mbstring` habilitados.
-- MySQL/MariaDB (Laragon funciona bem).
-- JSON da Bíblia: `Books/Books.json` e os ficheiros de livros em `Books/contentBook/` (o migrador também procura ficheiros JSON na raiz).
-- Dump SQL completo do dicionário no caminho indicado por `TRANSCRIPTION_SQL_FILE`.
+Aplicação web para leitura da Bíblia, desenvolvida com PHP, MySQL, HTML, CSS e JavaScript.
 
-## Instalação
-1. Copie os ficheiros do projecto para `C:\laragon\www\Bible-niv`.
-2. Edite `.env` com as credenciais MySQL. O caminho padrão do dicionário é `schema/transcription_table.sql`.
-3. Crie no phpMyAdmin a base de dados definida por `DB_DATABASE` (por exemplo, `bible_reader`).
-4. Coloque `Books.json` em `Books/Books.json` e os JSON dos livros em `Books/contentBook/`.
-5. Coloque o dump completo do dicionário em `schema/transcription_table.sql` (ou altere `TRANSCRIPTION_SQL_FILE`).
-6. Execute no terminal do Laragon, dentro da pasta do projecto: `php migrate.php`.
-7. Abra `http://localhost/Bible-niv/`.
+O sistema permite consultar livros, capítulos e versículos, acompanhar o progresso de leitura, guardar transcrições fonéticas em inglês e manter o histórico de leituras completas dos utilizadores registados.
 
-## Contas e progresso
-- `auth.php?mode=register`: cria conta; `auth.php?mode=login`: inicia sessão.
-- Visitantes guardam progresso e preferências em `localStorage`, apenas naquele navegador.
-- Utilizadores autenticados guardam capítulos lidos, versículos marcados, ciclos de leitura e datas de conclusão no MySQL.
-- Ao marcar todos os capítulos existentes como lidos no ciclo actual, o sistema regista a conclusão e inicia automaticamente o próximo ciclo sem apagar o histórico anterior.
-- O número de capítulos é calculado a partir dos capítulos existentes em `bible_verses`, não depende de um valor fixo no JavaScript.
-- A palavra-passe é guardada com `password_hash`, nunca em texto simples.
+## ✨ Funcionalidades
 
-## Tabelas principais
-- `bible_books`: livros e ordem canónica.
-- `bible_verses`: capítulos e versículos.
-- `transcription_table`: dicionário fonético local; `---` significa sem transcrição.
-- `users`: contas.
-- `reading_cycles`: um registo por ciclo de leitura, com data de início e conclusão.
-- `reading_chapters`: capítulos marcados no ciclo activo.
-- `user_verse_marks`: versículos marcados por utilizador.
+- Leitura dos livros, capítulos e versículos da Bíblia.
+- Consulta de transcrições fonéticas através de um dicionário MySQL.
+- Registo de utilizadores e início de sessão.
+- Acompanhamento do progresso de leitura.
+- Marcação de capítulos e versículos.
+- Histórico de ciclos de leitura concluídos.
+- Armazenamento local das preferências dos visitantes.
+- Configuração da aplicação através do ficheiro `.env`.
 
-## Segurança e notas
-- Não publiques o `.env`; está incluído no `.gitignore`.
-- O ficheiro `migrate.php` só pode ser executado pelo terminal.
-- Executar `migrate.php` volta a importar os versículos. Não apaga as contas nem os ciclos de leitura.
-- A importação do dicionário usa `INSERT IGNORE` para evitar duplicar palavras se o dump for executado novamente.
-- Depois de confirmar a migração, mantém uma cópia de segurança dos JSON originais.
+## 🛠️ Tecnologias
+
+- PHP
+- MySQL
+- HTML5
+- CSS3
+- JavaScript
+- Laragon
+- PDO para acesso à base de dados
+
+## 📋 Requisitos
+
+- PHP com as extensões PDO e PDO MySQL.
+- MySQL ou MariaDB.
+- Laragon, XAMPP ou um servidor web compatível.
+- Navegador moderno.
+
+## ⚙️ Instalação
+
+### 1. Clonar ou copiar o projecto
+
+Coloque a pasta do projecto no directório web do Laragon:
+
+`C:\laragon\www\Bible-niv`
+
+### 2. Criar a base de dados
+
+No phpMyAdmin, crie uma base de dados chamada `bible_reader`, ou utilize outro nome e actualize a configuração.
+
+### 3. Configurar o ambiente
+
+Edite o ficheiro `.env` na raiz do projecto:
+
+```dotenv
+APP_NAME="Leitor Biblico"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost/Bible-niv
+APP_TIMEZONE=Africa/Luanda
+
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=bible_reader
+DB_USERNAME=root
+DB_PASSWORD=
+DB_CHARSET=utf8mb4
+
+TRANSCRIPTION_SQL_FILE=schema/transcription_table.sql
+```
+
+Ajuste as credenciais conforme a configuração do seu MySQL.
+
+### 4. Importar os dados
+
+Confirme que os ficheiros JSON da Bíblia e o ficheiro SQL do dicionário estão nas localizações esperadas pelo script de migração.
+
+Execute no terminal:
+
+```bash
+php migrate.php
+```
+
+### 5. Abrir a aplicação
+
+Aceda a:
+
+http://localhost/Bible-niv/
+
+## 👤 Modos de utilização
+
+### Visitante
+
+O visitante pode ler a Bíblia sem criar uma conta. As informações locais de leitura podem ser guardadas no navegador.
+
+### Utilizador registado
+
+O utilizador pode iniciar sessão para guardar e recuperar o progresso e o histórico de leitura na base de dados.
+
+## 🔐 Segurança
+
+- Não publique o ficheiro `.env` nem credenciais da base de dados.
+- Utilize `password_hash()` e `password_verify()` para as palavras-passe.
+- Utilize consultas preparadas PDO.
+- Proteja as sessões e os endpoints de leitura.
+- Desactive a depuração em produção.
+- Faça cópias de segurança regulares da base de dados.
+
+## 📁 Organização
+
+- `api/` — endpoints da aplicação.
+- `assets/` — CSS e JavaScript.
+- `Books/` — lista e ficheiros JSON dos livros.
+- `schema/` — estrutura SQL e dados do dicionário.
+- `config.php` — configuração e ligação à base de dados.
+- `migrate.php` — importação e preparação da base de dados.
+
+## 🚀 Objectivo
+
+Oferecer uma experiência simples de leitura bíblica, com acompanhamento do progresso e histórico das leituras concluídas.
+
+## 📄 Licença
+
+Defina aqui a licença de distribuição do projecto, caso pretenda publicá-lo.
